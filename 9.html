@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>9 的组成 · 复习闯关（手机版）</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(180deg, #FFF3DF 0%, #FFF9F0 100%);
+    color: #4A3728; padding: 12px; max-width: 480px; margin: 0 auto;
+    touch-action: manipulation; overflow-x: hidden;
+  }
+  .num { font-family: "Segoe Print", "Comic Sans MS", "Microsoft YaHei", cursive; }
+  .hidden { display: none !important; }
+  h1 { font-size: 26px; color: #E8590C; text-align: center; margin-top: 4px; }
+  .scene { text-align: center; font-size: 15px; margin-top: 4px; }
+  .card {
+    background: #FFFFFF; border-radius: 20px; padding: 16px;
+    margin-top: 14px; box-shadow: 0 4px 14px rgba(180, 120, 40, .14);
+  }
+  h2 { font-size: 20px; color: #C2410C; margin-bottom: 10px; }
+  .btn {
+    border: none; border-radius: 14px; padding: 12px 18px; font-size: 17px; cursor: pointer;
+    background: #FF922B; color: #fff; font-family: inherit; min-height: 48px;
+  }
+  .btn.gray { background: #B8905E; }
+  .btn.green { background: #40C057; }
+  .btnRow { display: flex; gap: 10px; margin-top: 12px; }
+  .btnRow .btn { flex: 1; }
+
+  /* ---------- 首页关卡卡 ---------- */
+  .levelCard {
+    border-radius: 18px; padding: 16px; margin-top: 12px; cursor: pointer;
+    border: 2px solid #F3C88B; background: #FFF9F0; position: relative;
+  }
+  .levelCard:active { transform: scale(.98); }
+  .levelCard .lvNum { font-size: 14px; color: #B8700F; font-weight: bold; }
+  .levelCard .lvName { font-size: 22px; color: #E8590C; font-weight: bold; margin-top: 2px; }
+  .levelCard .lvStars { font-size: 14px; color: #A16207; margin-top: 6px; }
+  .levelCard.locked { background: #F1EDE6; border-color: #D8CFC0; opacity: .8; }
+  .levelCard.locked .lvName { color: #9C8B74; }
+  .levelCard .lvIcon { position: absolute; right: 16px; top: 14px; font-size: 30px; }
+
+  /* ---------- 第一关 ---------- */
+  #qDots { display: flex; gap: 7px; justify-content: center; margin: 4px 0 10px; }
+  .dot { width: 13px; height: 13px; border-radius: 50%; background: #EBDFC8; }
+  .dot.done { background: #51CF66; }
+  .dot.cur { background: #FF922B; transform: scale(1.25); }
+  #qVisual { text-align: center; }
+  .fruitRow { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin: 6px 0; }
+  .miniFruit { width: 30px; height: 30px; position: relative; }
+  .miniFruit svg { width: 100%; height: 100%; }
+  .miniFruit.crossed { opacity: .35; }
+  .miniFruit.crossed::after {
+    content: "✗"; position: absolute; inset: 0; display: flex; align-items: center;
+    justify-content: center; color: #E03131; font-size: 20px; font-weight: bold; opacity: 1;
+  }
+  .visNote { font-size: 19px; color: #5A4638; text-align: center; line-height: 1.5; margin: 12px 0 4px; }
+  #qEq {
+    text-align: center; font-size: 34px; color: #4A3728; margin: 10px 0 14px; letter-spacing: 3px;
+  }
+  #qEq .qbox {
+    display: inline-block; min-width: 52px; border-bottom: 3px dashed #E8590C; color: #E8590C;
+    text-align: center;
+  }
+  #qOptions { display: flex; gap: 12px; }
+  .opt {
+    flex: 1; min-height: 60px; border: none; border-radius: 16px; font-size: 28px;
+    background: #FFD8A8; color: #7A4B12; cursor: pointer; font-family: inherit;
+  }
+  .opt.right { background: #D3F9D8; color: #2B8A3E; outline: 3px solid #51CF66; }
+  .opt.wrong { background: #FFE3E3; color: #C92A2A; animation: shake .4s; }
+  .opt:disabled { cursor: default; }
+  @keyframes shake { 25% { transform: translateX(-6px); } 50% { transform: translateX(6px); } 75% { transform: translateX(-4px); } }
+  #qMsg { min-height: 26px; text-align: center; font-size: 17px; margin-top: 12px; }
+  #qMsg.good { color: #2B8A3E; font-weight: bold; }
+  #qMsg.bad { color: #C92A2A; }
+
+  /* ---------- 通关面板 ---------- */
+  #finalStars { font-size: 44px; text-align: center; }
+  .doneTitle { text-align: center; font-size: 22px; color: #E8590C; font-weight: bold; margin-top: 6px; }
+  .doneMsg { text-align: center; font-size: 16px; color: #846358; margin-top: 8px; line-height: 1.7; }
+
+  /* ---------- 彩纸 / 提示 ---------- */
+  .confetti { position: fixed; top: -12px; width: 10px; height: 14px; z-index: 100; animation: fall 2.6s linear forwards; }
+  @keyframes fall { to { transform: translateY(105vh) rotate(540deg); opacity: .7; } }
+  #toast {
+    position: fixed; left: 50%; bottom: 40px; transform: translateX(-50%);
+    background: rgba(74, 55, 40, .92); color: #fff; padding: 10px 18px; border-radius: 20px;
+    font-size: 15px; z-index: 101; transition: opacity .3s; opacity: 0; pointer-events: none;
+    max-width: 86vw; text-align: center;
+  }
+  #toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>🍎 9 的组成 · 复习闯关</h1>
+    <p class="scene">答对 8 题，就是 9 的口算小达人！</p>
+  </header>
+
+  <!-- 首页 -->
+  <section id="home" class="card">
+    <div class="levelCard" id="cardL1">
+      <span class="lvIcon">🧮</span>
+      <div class="lvNum">口算挑战</div>
+      <div class="lvName">9 的口算 · 共 8 题</div>
+      <div class="lvStars" id="starsL1">尚未挑战</div>
+    </div>
+  </section>
+
+  <!-- 第一关：口算 -->
+  <section id="l1" class="card hidden">
+    <h2>9 的口算</h2>
+    <div id="qDots"></div>
+    <div id="qVisual"></div>
+    <div id="qEq" class="num"></div>
+    <div id="qOptions"></div>
+    <div id="qMsg"></div>
+    <div class="btnRow"><button class="btn gray" id="l1Home">🏠 回首页</button></div>
+  </section>
+
+  <!-- 通关 -->
+  <section id="final" class="card hidden">
+    <div id="finalStars"></div>
+    <div class="doneTitle">🎉 你真棒！</div>
+    <div class="doneMsg" id="finalMsg">9 的口算记住啦！</div>
+    <div class="btnRow"><button class="btn" id="againBtn">🔁 再玩一次</button></div>
+  </section>
+
+  <div id="toast"></div>
+
+<script>
+/* ================= 水果 SVG ================= */
+var FRUITS = [
+  '<svg viewBox="0 0 40 40"><path d="M20 10 C11 6 6 14 7 22 C8 31 14 36 20 35 C26 36 32 31 33 22 C34 14 29 6 20 10Z" fill="#E74C3C"/><path d="M20 10 C20 7 21 5 23 3" stroke="#7A4B26" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M22 7 C26 2 32 3 33 6 C30 10 24 10 22 7Z" fill="#58B368"/><ellipse cx="14" cy="18" rx="3.4" ry="5" fill="#FFF" opacity=".35"/></svg>',
+  '<svg viewBox="0 0 40 40"><circle cx="20" cy="23" r="13" fill="#FF9F1C"/><path d="M20 10 C20 8 21 6 23 4" stroke="#5C8A3A" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M21 8 C25 3 31 4 32 7 C29 11 23 11 21 8Z" fill="#58B368"/><ellipse cx="15" cy="19" rx="3" ry="4.5" fill="#FFF" opacity=".4"/></svg>',
+  '<svg viewBox="0 0 40 40"><path d="M5 13 C8 25 18 33 32 31 C35 30.5 36 27 32.5 27.5 C20 28.5 12 21 10 12 C9.3 8.5 4.3 9.8 5 13Z" fill="#FFD23F" stroke="#E0A800" stroke-width="1.4"/><path d="M6 11 C5 8 8 6 10 8" stroke="#7A9B3A" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
+  '<svg viewBox="0 0 40 40"><path d="M20 8 C24 3 30 4 31 7 C28 11 22 11 20 8Z" fill="#58B368"/><circle cx="15" cy="15" r="5" fill="#845EF7"/><circle cx="25" cy="15" r="5" fill="#7048E8"/><circle cx="20" cy="21" r="5" fill="#845EF7"/><circle cx="14" cy="24" r="5" fill="#7048E8"/><circle cx="26" cy="24" r="5" fill="#6741D9"/><circle cx="20" cy="30" r="5" fill="#845EF7"/></svg>',
+  '<svg viewBox="0 0 40 40"><path d="M20 9 C28 9 32 15 30 23 C28 30 23 35 20 36 C17 35 12 30 10 23 C8 15 12 9 20 9Z" fill="#E63946"/><path d="M20 9 L15 4 L18 8 L20 3 L22 8 L25 4 L20 9Z" fill="#58B368"/><circle cx="16" cy="18" r="1.2" fill="#FFE3C2"/><circle cx="24" cy="18" r="1.2" fill="#FFE3C2"/><circle cx="20" cy="23" r="1.2" fill="#FFE3C2"/></svg>',
+  '<svg viewBox="0 0 40 40"><path d="M20 8 C22 12 28 14 29 22 C30 30 25 35 20 35 C15 35 10 30 11 22 C12 14 18 12 20 8Z" fill="#A9C938"/><path d="M20 8 C20 6 21 4 23 3" stroke="#7A4B26" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>'
+];
+var KINDS = [0, 1, 2, 3, 4, 0, 1, 2, 5];
+
+function shuffle(arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1)), t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+function fruitRow(n, crossed) {
+  var h = '<div class="fruitRow">';
+  for (var i = 0; i < n; i++) {
+    h += '<span class="miniFruit' + (i < (crossed || 0) ? ' crossed' : '') + '">' + FRUITS[KINDS[i % 9]] + '</span>';
+  }
+  return h + '</div>';
+}
+function confetti() {
+  var colors = ['#FF922B', '#40C057', '#339AF0', '#F06595', '#FFD43B', '#845EF7'];
+  for (var i = 0; i < 36; i++) {
+    var c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[i % colors.length];
+    c.style.animationDelay = (Math.random() * .6) + 's';
+    c.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
+    document.body.appendChild(c);
+    setTimeout(function (el) { return function () { el.remove(); }; }(c), 3400);
+  }
+}
+function toast(t) {
+  var el = document.getElementById('toast');
+  el.textContent = t; el.classList.add('show');
+  clearTimeout(el._tm);
+  el._tm = setTimeout(function () { el.classList.remove('show'); }, 1800);
+}
+function show(id) {
+  ['home', 'l1', 'final'].forEach(function (s) {
+    document.getElementById(s).classList.toggle('hidden', s !== id);
+  });
+  window.scrollTo(0, 0);
+}
+
+/* ================= 第一关：口算 ================= */
+var L1 = null;
+function genL1() {
+  var pairs = shuffle([[1, 8], [2, 7], [3, 6], [4, 5], [5, 4], [6, 3], [7, 2], [8, 1]]);
+  var qs = [];
+  for (var i = 0; i < 4; i++) qs.push({ kind: 'addF', a: pairs[i][0], ans: pairs[i][1] });
+  for (var i = 4; i < 8; i++) qs.push({ kind: 'sub', a: pairs[i][0], ans: pairs[i][1] });
+  return qs;
+}
+function makeOptions(ans) {
+  var opts = [ans];
+  shuffle([ans - 1, ans + 1, ans - 2, ans + 2, 9 - ans]).forEach(function (v) {
+    if (opts.length < 3 && v >= 0 && v <= 9 && opts.indexOf(v) < 0) opts.push(v);
+  });
+  return shuffle(opts);
+}
+function startL1() {
+  L1 = { qs: genL1(), idx: 0, wrongQ: {}, done: false, stars: 0, lock: false };
+  renderQ();
+  show('l1');
+}
+function renderQ() {
+  var q = L1.qs[L1.idx];
+  var vis = document.getElementById('qVisual');
+  var eq = document.getElementById('qEq');
+  if (q.kind === 'addF') {
+    vis.innerHTML = '';
+    eq.innerHTML = '<span>' + q.a + '</span> + <span class="qbox">?</span> = 9';
+  } else {
+    vis.innerHTML = '';
+    eq.innerHTML = '9 − <span>' + q.a + '</span> = <span class="qbox">?</span>';
+  }
+  var box = document.getElementById('qOptions');
+  box.innerHTML = '';
+  box.dataset.ans = q.ans;
+  makeOptions(q.ans).forEach(function (v) {
+    var b = document.createElement('button');
+    b.className = 'opt num'; b.textContent = v; b.dataset.v = v;
+    b.addEventListener('click', function () { onOption(v, b); });
+    box.appendChild(b);
+  });
+  document.getElementById('qMsg').textContent = ''; document.getElementById('qMsg').className = '';
+  var dots = '';
+  for (var i = 0; i < 8; i++) {
+    dots += '<span class="dot' + (i < L1.idx ? ' done' : i === L1.idx ? ' cur' : '') + '"></span>';
+  }
+  document.getElementById('qDots').innerHTML = dots;
+}
+function onOption(v, btn) {
+  if (!L1 || L1.lock) return;
+  var q = L1.qs[L1.idx], msg = document.getElementById('qMsg');
+  if (v === q.ans) {
+    btn.classList.add('right');
+    document.querySelectorAll('#qOptions .opt').forEach(function (b) { b.disabled = true; });
+    msg.textContent = '答对啦！🎉'; msg.className = 'good';
+    L1.lock = true;
+    setTimeout(nextQ, 800);
+  } else {
+    btn.classList.add('wrong'); btn.disabled = true;
+    q.wasWrong = true; L1.wrongQ[L1.idx] = 1;
+    msg.textContent = '再想想哦'; msg.className = 'bad';
+  }
+}
+function nextQ() {
+  L1.lock = false; L1.idx++;
+  if (L1.idx >= 8) { finishL1(); return; }
+  renderQ();
+}
+function finishL1() {
+  var wrongN = Object.keys(L1.wrongQ).length;
+  L1.stars = wrongQStars(wrongN);
+  L1.done = true;
+  document.getElementById('finalStars').textContent = starStr(L1.stars);
+  document.getElementById('starsL1').textContent = starStr(L1.stars) + ' 已通关';
+  confetti();
+  show('final');
+}
+function wrongQStars(wrongN) { return wrongN === 0 ? 3 : wrongN <= 2 ? 2 : 1; }
+function starStr(n) { return n === 3 ? '⭐⭐⭐' : n === 2 ? '⭐⭐' : '⭐'; }
+
+/* ================= 事件绑定 ================= */
+document.getElementById('cardL1').addEventListener('click', startL1);
+document.getElementById('l1Home').addEventListener('click', function () { show('home'); });
+document.getElementById('againBtn').addEventListener('click', function () {
+  L1 = null;
+  document.getElementById('starsL1').textContent = '尚未挑战';
+  show('home');
+});
+</script>
+</body>
+</html>
