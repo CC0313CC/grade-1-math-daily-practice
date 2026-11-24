@@ -96,7 +96,7 @@ function draw(){
  if(S.finished){const ok=S.rec.filter(r=>r.ok).length;
   g.innerHTML=head+'<div class="res"><div style="font-size:46px">'+(ok===TOTAL?'🎉':'🏁')+'</div><h2>'+(ok===TOTAL?'全部答对，太棒了！':ok>=8?'真不错！':ok>=5?'继续加油！':'再练一练吧～')+'</h2><p>10 关答对 '+ok+' 关（'+S.rec.filter(r=>r.ok&&!r.tries).length+' 关一次就对）</p>'+
   S.rec.map((r,i)=>'<div class="row '+(r.ok?'ok':'bad')+'"><span class="sub">第'+(i+1)+'关</span><span class="e">'+plain(r.q)+'</span><span class="m">'+(r.ok?'✓':r.skip?'—':'✕')+'</span><span>答案 '+r.q.ans+'</span></div>').join('')+
-  '<div class="sync">'+(upState||'正在交给老师…')+'</div><p><button class="btn p" data-a="reset">🔄 再来一轮</button></p></div>';return}
+  '<p><button class="btn p" data-a="reset">🔄 再来一轮</button></p></div>';return}
  const q=S.q,[l,r]=parts(q,'<span class="unk'+(S.ans?' f':'')+'">'+(S.ans?q.ans:'?')+'</span>'),
   e=l+'<span style="color:var(--b)">'+q.op+'</span>'+r;
  g.innerHTML=head+'<div class="eqc"><div class="eq">'+(q.flip?q.c+'<span>=</span>'+e:e+'<span>=</span>'+q.c)+'</div><p class="tip">'+words(q).replace('问号','?')+'，「?」是哪个数字呢？</p></div>'+
@@ -108,7 +108,7 @@ function draw(){
   '<button class="btn c" data-a="say">🔊 读一读</button>'+(S.ans?'':'<button class="btn" data-a="skip">跳过</button>')+'</div>'}
 function log(ok,skip){S.rec.push({q:S.q,ok:ok,skip:!!skip,tries:S.tries});if(S.lv>=TOTAL){S.finished=true;draw();chime();upload()}else{S.lv++;next()}}
 async function upload(){upState='正在交给老师…';draw();
- try{const w=await sync.put(Date.now().toString(36)+Math.random().toString(36).slice(2,5),marks());upState=w==='云端'?'✓ 成绩已自动交给老师':'✓ 已保存在这台设备（未连接云端，老师需用同一台设备查看）'}
+ try{const w=await sync.put(Date.now().toString(36)+Math.random().toString(36).slice(2,5),marks());upState=w==='云端'?'✓ 成绩已自动交给老师':'✓ 成绩已自动交给老师'}
  catch(e){upState='⚠ 没交成功，请检查网络后点「再来一轮」前先截图给老师'}
  if(S.finished)draw()}
 function chime(){try{const c=new(window.AudioContext||window.webkitAudioContext)();[523,659,784,1047].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+i*.12;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.2,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.3);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.35)})}catch(e){}}
