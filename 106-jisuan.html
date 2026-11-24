@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>一年6班 · 趣味数学闯关</title>
+<style>
+:root{--bg:#FFF8E9;--card:#fff;--ink:#3C3022;--mut:#87745B;--line:#F0E2C8;--y:#FFF2C9;--o:#F28C3C;--g:#2F9C78;--gl:#DEF5EC;--b:#3E82C4;--bl:#E4F1FC;--r:#E05B4B;--w:#FFF0E1;--wd:#B4632F;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#1d1a15;--card:#2a251d;--ink:#f3eadb;--mut:#b9a98f;--line:#443b2c;--y:#3a3320;--gl:#1f3a30;--bl:#1f3345;--w:#3d2c1d}}
+*{box-sizing:inherit}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:900px;margin:auto;padding:14px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:18px;margin-bottom:12px}
+h1{font-size:22px;margin:0}.sub{color:var(--mut);font-size:14px;margin:0}
+.top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.top select{margin-left:auto;font:inherit;padding:8px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.dots{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}.dot{width:26px;height:26px;border-radius:8px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+.dot.ok{background:var(--g);color:#fff;border-color:var(--g)}.dot.bad{background:var(--w);color:var(--wd);border-color:var(--wd)}.dot.now{background:var(--o);color:#fff;border-color:var(--o)}
+.eqc{background:var(--y);border-radius:18px;padding:16px;text-align:center}.eq{font-size:52px;font-weight:800;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.unk{color:var(--o);border:3px dashed var(--o);border-radius:14px;min-width:84px;background:var(--card)}.unk.f{color:var(--g);border:3px solid var(--g)}
+.tip{color:var(--wd);font-weight:800;margin:8px 0 0}
+.fr{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:34px;margin-top:10px}.fr .x{opacity:.35;text-decoration:line-through}.fr .q{border:2px dashed var(--wd);border-radius:50%;width:42px;height:42px;font-size:22px;display:inline-flex;align-items:center;justify-content:center;color:var(--wd)}
+.keys{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0}.k{width:56px;height:56px;border-radius:15px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;font-size:26px;font-family:inherit;cursor:pointer}
+.k.right{background:var(--g);color:#fff;border-color:var(--g)}.k.wrong{background:var(--w);color:var(--wd);border-color:var(--wd)}
+.fb{padding:10px 14px;border-radius:14px;font-weight:700;margin-bottom:10px}.fb.ok{background:var(--gl)}.fb.warn{background:var(--w);color:var(--wd)}.fb.info{background:var(--bl)}
+.btn{min-height:44px;padding:8px 16px;border-radius:13px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;font-size:15px;font-family:inherit;cursor:pointer;margin:0 6px 6px 0}
+.btn.p{background:var(--o);border-color:var(--o);color:#fff}.btn.g{background:var(--g);border-color:var(--g);color:#fff}.btn.c{background:var(--b);border-color:var(--b);color:#fff}
+.row{display:flex;gap:10px;align-items:center;padding:6px 12px;margin-top:6px;border:2px solid var(--line);border-radius:12px;font-weight:800}.row .e{flex:1}.row.ok .m{color:var(--g)}.row.bad .m{color:var(--r)}
+.res{text-align:center}.res h2{font-size:26px;margin:4px 0}.sync{margin-top:12px;padding:10px;border-radius:14px;background:var(--bl);font-weight:800;text-align:center}
+/* teacher */
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}.kp div{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:10px 14px}.kp b{font-size:28px;display:block;color:var(--g)}.kp span{font-size:13px;color:var(--mut)}
+.bar{display:grid;grid-template-columns:50px 1fr 90px;gap:8px;align-items:center;font-size:13px;font-weight:700;margin:5px 0}.tr{height:14px;border-radius:7px;background:var(--line);overflow:hidden}.tr i{display:block;height:100%;background:var(--g)}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.m1,.m2,.m0,.mn{display:inline-block;width:20px;height:20px;border-radius:6px;margin-right:3px;text-align:center;font-size:11px;line-height:20px;font-weight:800}.m1{background:var(--g);color:#fff}.m2{background:#FCF0DA;color:#B9791B}.m0{background:#FBEBE7;color:var(--r)}.mn{background:var(--line);color:var(--mut)}
+@media(max-width:560px){.eq{font-size:38px}.k{width:48px;height:48px}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const MAX=10,TOTAL=10,CHIPS=[0,1,2,3,4,5,6,7,8,9,10];
+/* 若不在 Claude 里托管，而是放到自己的网站：在这里填 Firebase 实时数据库地址（形如 https://xxx.firebaseio.com），即可跨设备同步 */
+const REST_URL='';
+const $=s=>document.querySelector(s),rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+
+/* ===== 同步层：Claude 数据库 → REST → 本机 ===== */
+let DB=null;const LS='y6r';
+const ready=(async()=>{try{if(window.claude&&claude.use)DB=await claude.use('db')}catch(e){}})();
+const sync={
+ async put(no,m){await ready;const v={m:m,t:Date.now()};
+  if(DB){await DB.collection('r').doc(String(no)).set(v);return'云端'}
+  if(REST_URL){const r=await fetch(REST_URL+'/r/'+no+'.json',{method:'PUT',body:JSON.stringify(v)});if(!r.ok)throw 0;return'云端'}
+  const o=JSON.parse(localStorage.getItem(LS)||'{}');o[no]=m;localStorage.setItem(LS,JSON.stringify(o));return'本机'},
+ async watch(cb){await ready;
+  if(DB){DB.collection('r').onSnapshot(s=>{const o={};s.docs.forEach(d=>o[d.id]=d.data().m);cb(o)});return'实时同步中'}
+  if(REST_URL){const f=async()=>{try{const j=await(await fetch(REST_URL+'/r.json')).json()||{},o={};for(const k in j)o[k]=j[k].m;cb(o)}catch(e){}};f();setInterval(f,4000);return'每 4 秒自动刷新'}
+  const f=()=>cb(JSON.parse(localStorage.getItem(LS)||'{}'));f();addEventListener('storage',f);return'仅本机（未连接云端）'},
+ async clear(){await ready;
+  if(DB){const s=await DB.collection('r').get();await Promise.all(s.docs.map(d=>d.delete()))}
+  else if(REST_URL)await fetch(REST_URL+'/r.json',{method:'DELETE'});
+  else localStorage.removeItem(LS)}
+};
+
+/* ===== 路由：默认学生端，网址后加 #teacher 是教师端 ===== */
+function route(){location.hash==='#teacher'?teacher():student()}
+addEventListener('hashchange',()=>location.reload());
+
+/* ===== 学生端 ===== */
+let S,upState='';
+function student(){
+ $('#app').innerHTML='<div class="top"><div><h1>🍊 想一想，填一填</h1><p class="sub">10 以内加减法 · 每轮 10 关</p></div></div><div class="card" id="g"></div>';
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&A[b.dataset.a])A[b.dataset.a](b)});
+ init();next();
+}
+function init(){S={q:null,lv:1,rec:[],tries:0,ans:false,wp:undefined,hint:false,finished:false};upState=''}
+/* 修复：加法「a + ? = c」原来答案算成了 a，现在统一 ans = 问号处的数 */
+function gen(){
+ if(Math.random()<.42){const a=rnd(0,MAX-1),b=rnd(1,MAX-a),f=Math.random()<.5;
+  return{op:'+',a:a,b:b,c:a+b,u:f?'a':'b',ans:f?a:b}}
+ const b=rnd(1,MAX-1),c=rnd(0,MAX-b),a=b+c,f=Math.random()<.75;
+ return{op:'-',a:a,b:b,c:c,u:f?'a':'b',ans:f?a:b}}
+function next(){const q=gen();q.flip=Math.random()<.33;S.q=q;S.ans=false;S.tries=0;S.hint=false;S.wp=undefined;draw()}
+function parts(q,U){const l=q.u==='a'?U:q.a,r=q.u==='b'?U:q.b;return[l,r]}
+function words(q){const[l,r]=parts(q,'问号'),e=l+(q.op==='+'?'加':'减')+r;return q.flip?q.c+'等于'+e:e+'等于'+q.c}
+function plain(q){const[l,r]=parts(q,'?'),e=l+' '+q.op+' '+r;return q.flip?q.c+' = '+e:e+' = '+q.c}
+function marks(){return S.rec.map(r=>!r.ok?'0':r.tries?'2':'1').join('')}
+function hintHTML(q){let h='';
+ if(q.op==='+'){const k=q.u==='a'?q.b:q.a;h='<span>🍊</span>'.repeat(k)+'<span class="q">？</span>'.repeat(q.ans)}
+ else{const gone=q.a-q.c;h='<span class="x">🍊</span>'.repeat(gone)+'<span>🍊</span>'.repeat(q.c)}
+ return'<div class="fr">'+h+'</div><p class="sub" style="text-align:center">'+(q.op==='+'?'数一数「？」有几个':'划掉的和剩下的合起来是原来的数')+'</p>'}
+function explain(q){
+ if(q.op==='+')return'因为 '+q.a+' + '+q.b+' = '+q.c+'，所以「?」是 '+q.ans+'。';
+ return'因为 '+q.c+' + '+q.b+' = '+q.a+'，所以 '+q.a+' - '+q.b+' = '+q.c+'，「?」是 '+q.ans+'。'}
+function draw(){
+ const g=$('#g');let dots='';
+ for(let i=1;i<=TOTAL;i++){const r=S.rec[i-1];dots+='<span class="dot '+(r?r.ok?'ok':'bad':i===S.lv&&!S.finished?'now':'')+'">'+(r?r.ok?'✓':'✕':i)+'</span>'}
+ const head='<div class="dots">'+dots+'</div>';
+ if(S.finished){const ok=S.rec.filter(r=>r.ok).length;
+  g.innerHTML=head+'<div class="res"><div style="font-size:46px">'+(ok===TOTAL?'🎉':'🏁')+'</div><h2>'+(ok===TOTAL?'全部答对，太棒了！':ok>=8?'真不错！':ok>=5?'继续加油！':'再练一练吧～')+'</h2><p>10 关答对 '+ok+' 关（'+S.rec.filter(r=>r.ok&&!r.tries).length+' 关一次就对）</p>'+
+  S.rec.map((r,i)=>'<div class="row '+(r.ok?'ok':'bad')+'"><span class="sub">第'+(i+1)+'关</span><span class="e">'+plain(r.q)+'</span><span class="m">'+(r.ok?'✓':r.skip?'—':'✕')+'</span><span>答案 '+r.q.ans+'</span></div>').join('')+
+  '<div class="sync">'+(upState||'正在交给老师…')+'</div><p><button class="btn p" data-a="reset">🔄 再来一轮</button></p></div>';return}
+ const q=S.q,[l,r]=parts(q,'<span class="unk'+(S.ans?' f':'')+'">'+(S.ans?q.ans:'?')+'</span>'),
+  e=l+'<span style="color:var(--b)">'+q.op+'</span>'+r;
+ g.innerHTML=head+'<div class="eqc"><div class="eq">'+(q.flip?q.c+'<span>=</span>'+e:e+'<span>=</span>'+q.c)+'</div><p class="tip">'+words(q).replace('问号','?')+'，「?」是哪个数字呢？</p></div>'+
+  (S.hint?hintHTML(q):'')+
+  '<div class="keys">'+CHIPS.map(n=>'<button class="k'+(S.ans&&n===q.ans?' right':S.wp===n?' wrong':'')+'" data-a="pick" data-n="'+n+'"'+(S.ans?' disabled':'')+'>'+n+'</button>').join('')+'</div>'+
+  (S.ans?'<div class="fb ok">🌟 答对啦！'+explain(q)+'</div>':S.wp!==undefined?'<div class="fb warn">再想一想～可以点「看一看」，或「重新答」。</div>':S.hint?'<div class="fb info">看着水果数一数，再点一个数字。</div>':'')+
+  '<div>'+(S.ans?'<button class="btn g" data-a="go">'+(S.lv>=TOTAL?'看看结果 →':'马上下一关 →')+'</button>':'<button class="btn" data-a="hint">看一看</button>')+
+  (!S.ans&&S.wp!==undefined?'<button class="btn p" data-a="retry">↺ 重新答</button>':'')+
+  '<button class="btn c" data-a="say">🔊 读一读</button>'+(S.ans?'':'<button class="btn" data-a="skip">跳过</button>')+'</div>'}
+function log(ok,skip){S.rec.push({q:S.q,ok:ok,skip:!!skip,tries:S.tries});if(S.lv>=TOTAL){S.finished=true;draw();chime();upload()}else{S.lv++;next()}}
+async function upload(){upState='正在交给老师…';draw();
+ try{const w=await sync.put(Date.now().toString(36)+Math.random().toString(36).slice(2,5),marks());upState=w==='云端'?'✓ 成绩已自动交给老师':'✓ 已保存在这台设备（未连接云端，老师需用同一台设备查看）'}
+ catch(e){upState='⚠ 没交成功，请检查网络后点「再来一轮」前先截图给老师'}
+ if(S.finished)draw()}
+function chime(){try{const c=new(window.AudioContext||window.webkitAudioContext)();[523,659,784,1047].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+i*.12;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.2,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.3);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.35)})}catch(e){}}
+const A={
+ hint(){S.hint=true;draw()},retry(){S.wp=undefined;draw()},reset(){init();next()},
+ say(){if(!window.speechSynthesis)return;const u=new SpeechSynthesisUtterance(words(S.q));u.lang='zh-CN';u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u)},
+ skip(){log(false,true)},go(){log(true)},
+ pick(el){if(S.ans)return;const n=Number(el.dataset.n);if(n===S.q.ans){const q=S.q,st=S;S.ans=true;S.wp=undefined;draw();chime();setTimeout(()=>{if(S===st&&S.q===q&&S.ans&&!S.finished)log(true)},1600)}else{S.wp=n;S.tries++;draw()}}};
+
+/* ===== 教师端（匿名汇总：每完成一轮记一份） ===== */
+function teacher(){
+ $('#app').innerHTML='<div class="top"><div><h1>一年6班 · 教师端</h1><p class="sub" id="st">连接中…</p></div><span style="margin-left:auto"><button class="btn c" id="csv">导出 Excel</button><button class="btn" id="clr">清空本轮</button></span></div><div class="kp" id="kp"></div><div class="card"><b>各关答对率</b><div id="bars"></div></div><div class="card"><b>每份成绩</b> <span class="sub">绿＝一次答对　黄＝重试后答对　红＝未答对</span><div class="tw"><table><thead><tr><th>序号</th><th>第 1–10 关</th><th>一次</th><th>答对</th></tr></thead><tbody id="tb"></tbody></table></div></div><p class="sub">学生端网址：去掉末尾的 #teacher 即可。学生每做完一轮 10 关就自动出现一份，不记姓名。</p>';
+ let D={};
+ const c1=m=>[...m].filter(x=>x==='1').length,ca=m=>[...m].filter(x=>x!=='0').length;
+ const ids=()=>Object.keys(D).filter(k=>/^[0-2]{10}$/.test(D[k])).sort();
+ function paint(){
+  const I=ids(),n=I.length,av=f=>n?(I.reduce((t,k)=>t+f(D[k]),0)/n).toFixed(1):'—';
+  $('#kp').innerHTML='<div><b>'+n+'</b><span>已交份数</span></div><div><b>'+av(c1)+'</b><span>平均一次答对</span></div><div><b>'+I.filter(k=>c1(D[k])===10).length+'</b><span>十关全对</span></div><div><b style="color:var(--r)">'+I.filter(k=>ca(D[k])<=5).length+'</b><span>答对不超过 5 关</span></div>';
+  let b='';for(let i=0;i<TOTAL;i++){const a=I.filter(k=>D[k][i]!=='0').length,p=n?Math.round(a/n*100):0;b+='<div class="bar"><span>第'+(i+1)+'关</span><div class="tr"><i style="width:'+p+'%"></i></div><span>'+(n?p+'%':'—')+'</span></div>'}
+  $('#bars').innerHTML=b;
+  $('#tb').innerHTML=I.map((k,i)=>{const m=D[k];return'<tr><td>'+(i+1)+'</td><td>'+[...m].map(x=>'<span class="m'+x+'">'+(x==='0'?'✕':'✓')+'</span>').join('')+'</td><td>'+c1(m)+'</td><td>'+ca(m)+'</td></tr>'}).join('')||'<tr><td colspan="4" class="sub">还没有学生交成绩</td></tr>'}
+ sync.watch(o=>{D=o;paint()}).then(t=>$('#st').textContent='教师端 · '+t);
+ $('#clr').onclick=async()=>{if(confirm('确定清空本轮所有成绩？无法恢复。')){await sync.clear();D={};paint()}};
+ $('#csv').onclick=async()=>{
+  const L=['序号,'+Array.from({length:TOTAL},(_,i)=>'第'+(i+1)+'关').join(',')+',一次答对,答对'];
+  ids().forEach((k,i)=>{const m=D[k];L.push([i+1,...[...m].map(x=>x==='1'?'一次答对':x==='2'?'答对(重试)':'未答对'),c1(m),ca(m)].join(','))});
+  const data='\ufeff'+L.join('\r\n'),fn='一年6班闯关成绩.csv';
+  try{const d=await claude.use('downloads');if(d){await d.save({filename:fn,data:data});return}}catch(e){}
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download=fn;a.click()};
+}
+route();
+</script>
+</body>
+</html>
