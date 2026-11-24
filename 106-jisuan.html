@@ -77,7 +77,7 @@ function gen(){
   return{op:'+',a:a,b:b,c:a+b,u:f?'a':'b',ans:f?a:b}}
  const b=rnd(1,MAX-1),c=rnd(0,MAX-b),a=b+c,f=Math.random()<.75;
  return{op:'-',a:a,b:b,c:c,u:f?'a':'b',ans:f?a:b}}
-function next(){const q=gen();q.flip=Math.random()<.33;S.q=q;S.ans=false;S.tries=0;S.hint=false;S.wp=undefined;draw()}
+function next(){const q=gen();q.flip=Math.random()<.33;S.q=q;S.ans=false;S.tries=0;S.hint=false;S.hold=false;S.wp=undefined;draw()}
 function parts(q,U){const l=q.u==='a'?U:q.a,r=q.u==='b'?U:q.b;return[l,r]}
 function words(q){const[l,r]=parts(q,'问号'),e=l+(q.op==='+'?'加':'减')+r;return q.flip?q.c+'等于'+e:e+'等于'+q.c}
 function plain(q){const[l,r]=parts(q,'?'),e=l+' '+q.op+' '+r;return q.flip?q.c+' = '+e:e+' = '+q.c}
@@ -103,7 +103,7 @@ function draw(){
   (S.hint?hintHTML(q):'')+
   '<div class="keys">'+CHIPS.map(n=>'<button class="k'+(S.ans&&n===q.ans?' right':S.wp===n?' wrong':'')+'" data-a="pick" data-n="'+n+'"'+(S.ans?' disabled':'')+'>'+n+'</button>').join('')+'</div>'+
   (S.ans?'<div class="fb ok">🌟 答对啦！'+explain(q)+'</div>':S.wp!==undefined?'<div class="fb warn">再想一想～可以点「看一看」，或「重新答」。</div>':S.hint?'<div class="fb info">看着水果数一数，再点一个数字。</div>':'')+
-  '<div>'+(S.ans?'<button class="btn g" data-a="go">'+(S.lv>=TOTAL?'看看结果 →':'马上下一关 →')+'</button>':'<button class="btn" data-a="hint">看一看</button>')+
+  '<div>'+(S.lv>1?'<button class="btn" data-a="back">← 上一关</button>':'')+(S.ans?'<button class="btn g" data-a="go">'+(S.lv>=TOTAL?'看看结果 →':'马上下一关 →')+'</button>':'')+'<button class="btn" data-a="hint">看一看</button>'+
   (!S.ans&&S.wp!==undefined?'<button class="btn p" data-a="retry">↺ 重新答</button>':'')+
   '<button class="btn c" data-a="say">🔊 读一读</button>'+(S.ans?'':'<button class="btn" data-a="skip">跳过</button>')+'</div>'}
 function log(ok,skip){S.rec.push({q:S.q,ok:ok,skip:!!skip,tries:S.tries});if(S.lv>=TOTAL){S.finished=true;draw();chime();upload()}else{S.lv++;next()}}
@@ -113,10 +113,11 @@ async function upload(){upState='正在交给老师…';draw();
  if(S.finished)draw()}
 function chime(){try{const c=new(window.AudioContext||window.webkitAudioContext)();[523,659,784,1047].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+i*.12;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.2,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.3);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.35)})}catch(e){}}
 const A={
- hint(){S.hint=true;draw()},retry(){S.wp=undefined;draw()},reset(){init();next()},
+ hint(){S.hint=true;if(S.ans)S.hold=true;draw()},
+ back(){if(S.lv<=1||S.finished)return;const r=S.rec.pop();S.lv--;S.q=r.q;S.ans=false;S.tries=0;S.hint=false;S.hold=false;S.wp=undefined;draw()},retry(){S.wp=undefined;draw()},reset(){init();next()},
  say(){if(!window.speechSynthesis)return;const u=new SpeechSynthesisUtterance(words(S.q));u.lang='zh-CN';u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u)},
  skip(){log(false,true)},go(){log(true)},
- pick(el){if(S.ans)return;const n=Number(el.dataset.n);if(n===S.q.ans){const q=S.q,st=S;S.ans=true;S.wp=undefined;draw();chime();setTimeout(()=>{if(S===st&&S.q===q&&S.ans&&!S.finished)log(true)},1600)}else{S.wp=n;S.tries++;draw()}}};
+ pick(el){if(S.ans)return;const n=Number(el.dataset.n);if(n===S.q.ans){const q=S.q,st=S;S.ans=true;S.wp=undefined;draw();chime();setTimeout(()=>{if(S===st&&S.q===q&&S.ans&&!S.hold&&!S.finished)log(true)},1600)}else{S.wp=n;S.tries++;draw()}}};
 
 /* ===== 教师端（匿名汇总：每完成一轮记一份） ===== */
 function teacher(){
