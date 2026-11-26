@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>凑十好朋友</title>
+<style>
+:root{--bg:#FFF8E9;--card:#fff;--ink:#3C3022;--mut:#7A674F;--line:#E4D3B2;--y:#FFF2C9;--o:#F28C3C;--g:#2F9C78;--gl:#DEF5EC;--b:#3E82C4;--bl:#E4F1FC;--r:#E05B4B;--w:#FFF0E1;--wd:#A9561F}
+@media(prefers-color-scheme:dark){:root{--bg:#1d1a15;--card:#2a251d;--ink:#f6eddf;--mut:#c2b296;--line:#4a402f;--y:#3a3320;--gl:#1f3a30;--bl:#1f3345;--w:#3d2c1d;--wd:#f0a56b}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:18px/1.6 "PingFang SC","Microsoft YaHei",sans-serif;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.wrap{max-width:520px;margin:auto;padding:14px}
+h1{font-size:26px;margin:4px 0 0}.sub{color:var(--mut);font-size:16px;margin:2px 0 12px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:24px;padding:16px;margin-bottom:12px}
+.chain{display:flex;flex-direction:column;align-items:center;background:var(--y);border-radius:20px;padding:14px 8px}
+.pr{display:flex;align-items:center;justify-content:center;gap:12px}
+.op{font-size:36px;font-weight:800;color:var(--b);line-height:1}
+.eqs{font-size:34px;font-weight:800;color:var(--b);line-height:1.1;margin:4px 0}
+.nb{width:clamp(62px,19vw,80px);height:clamp(62px,19vw,80px);border:4px dashed var(--o);border-radius:16px;background:var(--card);color:var(--ink);font-weight:800;font-size:clamp(36px,11vw,46px);line-height:1;font-family:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.nb.sel{border-style:solid;box-shadow:0 0 0 5px rgba(242,140,60,.3)}
+.nb.fl{border-style:solid;border-color:var(--b)}
+.nb.gv{border:4px solid var(--line);background:var(--card);color:var(--mut);cursor:default}
+.nb.ok{border:4px solid var(--g);background:var(--gl);color:var(--g)}
+.nb.bad{border:4px solid var(--r);background:var(--w);color:var(--r)}
+.tip{text-align:center;color:var(--wd);font-weight:800;margin:10px 4px 0;font-size:17px}
+.hint{margin-top:12px;text-align:center}.fr{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;font-size:28px;margin:6px 0}
+.fr .q{border:3px dashed var(--wd);border-radius:50%;width:36px;height:36px;font-size:20px;display:inline-flex;align-items:center;justify-content:center;color:var(--wd)}
+.pr.hl{background:var(--bl);border-radius:18px;padding:6px 10px}
+.hc{background:var(--bl);border-radius:18px;padding:12px 8px;margin-top:10px;text-align:center}.hc b{font-size:21px}
+.tf{display:grid;grid-template-columns:repeat(5,clamp(40px,12vw,52px));gap:6px;justify-content:center;margin:10px 0}
+.tf i{height:clamp(40px,12vw,52px);border-radius:50%;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:30px;background:var(--card)}
+.tf i.e{border:3px dashed var(--wd);background:transparent}.hc p{margin:0;font-size:16px}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.k{height:68px;border-radius:18px;border:3px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;font-size:34px;font-family:inherit;cursor:pointer}
+.k:active{transform:scale(.96)}.k.off{opacity:.25}
+.fb{padding:12px 14px;border-radius:16px;font-weight:700;margin-bottom:12px;font-size:17px}
+.fb.ok{background:var(--gl)}.fb.warn{background:var(--w);color:var(--wd)}.fb.info{background:var(--bl)}
+.bt{display:flex;gap:8px}.btn{flex:1;min-height:54px;border-radius:16px;border:3px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;font-size:17px;font-family:inherit;cursor:pointer;padding:6px}
+.btn.g{background:var(--g);border-color:var(--g);color:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <h1>🤝 凑十好朋友</h1>
+ <p class="sub">1、2、3、4、6、7、8、9 各用一次</p>
+ <div class="card" id="g"></div>
+</div>
+<script>
+const $=s=>document.querySelector(s),rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),SH=a=>a.sort(()=>Math.random()-.5),POOL=[1,2,3,4,6,7,8,9];
+let T;
+const hp=()=>T.hint?[0,1,2,3].filter(p=>(T.v[2*p]==null)!==(T.v[2*p+1]==null)):[];
+const first=()=>T.v.findIndex(x=>x==null);
+function newT(){
+ const sol=SH([[1,9],[2,8],[3,7],[4,6]]).map(p=>Math.random()<.5?p:[p[1],p[0]]).flat(),v=Array(8).fill(null),g=Array(8).fill(false);
+ SH([0,1,2,3]).slice(0,3).forEach(i=>{const j=i*2+rnd(0,1);v[j]=sol[j];g[j]=true});
+ T={v:v,g:g,hint:false,bad:[],done:false,sel:0};T.sel=first();draw()}
+function check(){
+ if(T.v.includes(null))return;
+ T.bad=[0,1,2,3].filter(p=>T.v[2*p]+T.v[2*p+1]!==10);
+ if(!T.bad.length){T.done=true;chime()}}
+function chime(){try{const c=new(window.AudioContext||window.webkitAudioContext)();[523,659,784,1047].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+i*.12;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.2,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.3);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.35)})}catch(e){}}
+function draw(){
+ const used=new Set(T.v.filter(x=>x)),
+ box=i=>{const x=T.v[i],c=T.done?'ok':T.bad.includes(i>>1)?'bad':T.g[i]?'gv':i===T.sel?'sel':x?'fl':'';
+  return'<button class="nb '+c+'" data-a="slot" data-i="'+i+'" aria-label="第'+(i+1)+'个空格">'+(x||'')+'</button>'},
+ rows=[0,1,2,3].map(p=>'<div class="pr'+(hp().includes(p)?' hl':'')+'">'+box(2*p)+'<span class="op">+</span>'+box(2*p+1)+'</div>').join('<div class="eqs">=</div>');
+ let h='';
+ if(T.hint){
+  const r=hp().map(p=>{const L=T.v[2*p]!=null,x=L?T.v[2*p]:T.v[2*p+1];
+   return'<div class="hc"><b>第 '+(p+1)+' 行：'+(L?x+' + ？':'？ + '+x)+'</b><div class="tf">'+('<i>🍊</i>').repeat(x)+'<i class="e"></i>'.repeat(10-x)+'</div><p>这一行要凑满 10 格。已经放了 '+x+' 个🍊，数一数<b>空着的圈</b>有几个，「？」就填几。</p></div>'});
+  h=r.length?r.join(''):'<div class="hc"><p>先在任意一行填好一个数，再点「看一看」，我就帮你数。</p></div>'}
+ $('#g').innerHTML='<div class="chain">'+rows+'</div><p class="tip">让每个「+」的结果都一样</p>'+h+
+ '<div class="keys">'+POOL.map(n=>'<button class="k'+(used.has(n)?' off':'')+'" data-a="num" data-n="'+n+'"'+(used.has(n)||T.done?' disabled':'')+'>'+n+'</button>').join('')+'</div>'+
+ (T.done?'<div class="fb ok">🌟 太棒了！每一对加起来都是 10，它们是「凑十好朋友」：1 和 9、2 和 8、3 和 7、4 和 6。5 的好朋友是它自己（5 + 5），所以这里没有 5。</div>'
+  :T.bad.length?'<div class="fb warn">红色的这几对加起来和别的不一样，点一下红色的数字拿下来，再想一想。</div>'
+  :'<div class="fb info">点一个空格，再点下面的数字。填错了，点一下格子里的数字就能拿下来。</div>')+
+ '<div class="bt"><button class="btn" data-a="hint">👀 看一看</button><button class="btn" data-a="reset">↺ 重新填</button><button class="btn'+(T.done?' g':'')+'" data-a="again">'+(T.done?'再来一题 →':'换一题')+'</button></div>'}
+const A={
+ num(el){
+  if(T.done)return;const n=+el.dataset.n;if(T.v.includes(n))return;
+  let i=T.sel;if(i<0||T.v[i]!=null||T.g[i])i=first();if(i<0)return;
+  T.v[i]=n;T.sel=first();check();draw()},
+ slot(el){
+  const i=+el.dataset.i;if(T.done||T.g[i])return;
+  if(T.v[i]!=null){T.v[i]=null;T.bad=[]}
+  T.sel=i;draw()},
+ hint(){T.hint=true;draw()},
+ reset(){T.v=T.v.map((x,i)=>T.g[i]?x:null);T.bad=[];T.done=false;T.sel=first();draw()},
+ again(){newT()}};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&A[b.dataset.a])A[b.dataset.a](b)});
+newT();
+</script>
+</body>
+</html>
