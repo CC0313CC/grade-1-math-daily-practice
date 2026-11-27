@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>凑十 · 找十的好朋友（口算练习）</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #FFF6E9; color: #4A3728; padding: 16px; max-width: 560px; margin: 0 auto;
+  }
+  .num { font-family: "Segoe Print", "Comic Sans MS", "Microsoft YaHei", cursive; }
+  h1 { font-size: 26px; color: #E8590C; text-align: center; }
+  @media (max-width: 420px) { h1 { font-size: 22px; } #qEq { font-size: 40px; } }
+  .scene { text-align: center; font-size: 17px; margin-top: 8px; line-height: 1.6; }
+
+  section {
+    background: #FFFFFF; border-radius: 22px; padding: 20px 14px;
+    margin-top: 18px; box-shadow: 0 4px 14px rgba(180, 120, 40, .12);
+  }
+  #qDots { display: flex; gap: 7px; justify-content: center; margin: 2px 0 18px; }
+  .dot { width: 13px; height: 13px; border-radius: 50%; background: #EBDFC8; }
+  .dot.done { background: #51CF66; }
+  .dot.cur { background: #FF922B; transform: scale(1.25); }
+
+  #qEq {
+    text-align: center; font-size: 46px; color: #4A3728; margin: 6px 0 20px; letter-spacing: 3px;
+  }
+  #qEq .qbox {
+    display: inline-block; min-width: 62px; border-bottom: 4px dashed #E8590C; color: #E8590C;
+    text-align: center;
+  }
+  #qOptions { display: flex; gap: 12px; }
+  .opt {
+    flex: 1; min-height: 72px; border: none; border-radius: 16px; font-size: 32px;
+    background: #FFD8A8; color: #7A4B12; cursor: pointer; font-family: inherit;
+  }
+  .opt:active { transform: scale(.97); }
+  .opt.right { background: #D3F9D8; color: #2B8A3E; outline: 3px solid #51CF66; }
+  .opt.wrong { background: #FFE3E3; color: #C92A2A; animation: shake .4s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  #qMsg { text-align: center; font-size: 20px; min-height: 30px; margin-top: 16px; }
+  #qMsg.good { color: #2B8A3E; font-weight: bold; }
+  #qMsg.bad { color: #C92A2A; }
+  .rhymeBox {
+    margin-top: 12px; padding: 12px 8px 10px; background: #FFF7EA;
+    border: 2px dashed #F2A93B; border-radius: 14px;
+  }
+  .rhymeBox .hint { font-size: 18px; color: #2B8A3E; }
+  .rhyme { margin-top: 8px; }
+  /* 一格一字：上拼音、下汉字 */
+  .ziRow { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
+  .zi {
+    width: 42px; padding: 3px 0 4px; border-radius: 8px; background: #FFFFFF;
+    border: 2px solid #F3C88B; display: flex; flex-direction: column; align-items: center;
+  }
+  .zi .py {
+    font-family: "Comic Sans MS", "Segoe Print", "Segoe UI", Arial, sans-serif;
+    font-size: 13px; font-weight: 600; color: #E8590C; line-height: 1.2; height: 17px;
+  }
+  .zi .han { font-size: 24px; color: #D9480F; line-height: 1.3; }
+  /* 答对页的小卡片更窄，格子稍缩，保证一句 7 字一行放下 */
+  .rhymeBox .ziRow { gap: 3px; }
+  .rhymeBox .zi { width: 38px; padding: 2px 0 3px; }
+  .readRow { display: flex; gap: 12px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+  .readRow .btn { padding: 9px 16px; font-size: 17px; }
+
+  /* 凑十歌开场页 */
+  .introTitle { text-align: center; font-size: 24px; color: #C2410C; font-weight: bold; margin-bottom: 12px; }
+  #introSong { display: flex; flex-direction: column; gap: 8px; }
+  .songLine {
+    padding: 8px 6px; background: #FFF7EA; border-radius: 12px; cursor: pointer;
+  }
+  .songLine:active { transform: scale(.98); }
+  .songLine.reading { background: #D3F9D8; }
+
+  /* 完成页 */
+  #finalStars { font-size: 46px; text-align: center; margin: 6px 0; }
+  .doneTitle { text-align: center; font-size: 26px; color: #E8590C; font-weight: bold; }
+  .doneMsg { text-align: center; font-size: 17px; color: #846358; margin-top: 10px; line-height: 1.7; }
+  .btnRow { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
+  .btn {
+    border: none; border-radius: 14px; padding: 12px 20px; font-size: 18px; cursor: pointer;
+    background: #FF922B; color: #fff; font-family: inherit;
+  }
+  .btn.gray { background: #B8905E; }
+  .hidden { display: none !important; }
+
+  footer { margin-top: 18px; background: #FFEFDB; border-radius: 22px; padding: 14px 18px; font-size: 16px; line-height: 1.9; }
+  footer b { color: #D9480F; }
+  .confetti { position: fixed; top: -12px; width: 10px; height: 14px; z-index: 100; animation: fall 2.6s linear forwards; }
+  @keyframes fall { to { transform: translateY(105vh) rotate(540deg); opacity: .7; } }
+</style>
+</head>
+<body>
+  <h1>🔟 凑十 · 找十的好朋友 🔟</h1>
+  <p class="scene">先读一读凑十歌，再去闯关吧！</p>
+
+  <!-- 凑十歌开场 -->
+  <section id="intro">
+    <div class="introTitle">凑十歌</div>
+    <div id="introSong"></div>
+    <div class="btnRow">
+      <button class="btn gray" id="readSongBtn">🔊 大声读</button>
+      <button class="btn" id="goQuizBtn">开始闯关 →</button>
+    </div>
+  </section>
+
+  <!-- 题目 -->
+  <section id="quiz" class="hidden">
+    <div id="qDots"></div>
+    <div id="qEq" class="num"></div>
+    <div id="qOptions"></div>
+    <div id="qMsg"></div>
+  </section>
+
+  <!-- 完成 -->
+  <section id="final" class="hidden">
+    <div id="finalStars"></div>
+    <div class="doneTitle">🎉 你真棒！</div>
+    <div class="doneMsg" id="finalMsg"></div>
+    <div class="btnRow"><button class="btn" id="againBtn">🔁 再玩一次</button></div>
+  </section>
+
+
+<script>
+var TYPES = ['addBack', 'addFront', 'sub'];   // ?+a=10 / a+?=10 / 10-a=?
+var N = 10;
+var Q = null;
+/* 凑十口诀（带拼音），按较小的那个数取句 */
+var RHYMES = {
+  1: { h: ['一','九','一','九','好','朋','友'], p: ['yī','jiǔ','yī','jiǔ','hǎo','péng','yǒu'] },
+  2: { h: ['二','八','二','八','手','牵','手'], p: ['èr','bā','èr','bā','shǒu','qiān','shǒu'] },
+  3: { h: ['三','七','三','七','真','亲','密'], p: ['sān','qī','sān','qī','zhēn','qīn','mì'] },
+  4: { h: ['四','六','四','六','一','起','走'], p: ['sì','liù','sì','liù','yì','qǐ','zǒu'] },
+  5: { h: ['五','五','凑','成','一','双','手'], p: ['wǔ','wǔ','còu','chéng','yì','shuāng','shǒu'] }
+};
+function rhymeHtml(n) {
+  var r = RHYMES[Math.min(n, 10 - n)], s = '<div class="ziRow">';
+  for (var i = 0; i < r.h.length; i++) {
+    s += '<div class="zi"><div class="py">' + r.p[i] + '</div><div class="han num">' + r.h[i] + '</div></div>';
+  }
+  return s + '</div>';
+}
+function rhymeText(n) { return RHYMES[Math.min(n, 10 - n)].h.join(''); }
+
+function shuffle(arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1)), t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+function genQs() {
+  /* 1~9 各出现，保证练到每个好朋友 */
+  var as = shuffle([1,2,3,4,5,6,7,8,9,5]);
+  return as.map(function (a, i) {
+    return { kind: TYPES[i % 3], a: a, ans: 10 - a };
+  });
+}
+function makeOptions(ans) {
+  var opts = [ans];
+  shuffle([ans-1, ans+1, ans-2, ans+2, 10-ans, 1]).forEach(function (v) {
+    if (opts.length < 3 && v >= 0 && v <= 10 && opts.indexOf(v) < 0) opts.push(v);
+  });
+  return shuffle(opts);
+}
+function start() {
+  Q = { qs: genQs(), idx: 0, wrong: {}, lock: false };
+  document.getElementById('final').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+  render();
+}
+function render() {
+  var q = Q.qs[Q.idx];
+  var eq = document.getElementById('qEq');
+  if (q.kind === 'addBack') {
+    eq.innerHTML = '<span class="qbox">?</span> + <span>' + q.a + '</span> = 10';
+  } else if (q.kind === 'addFront') {
+    eq.innerHTML = '<span>' + q.a + '</span> + <span class="qbox">?</span> = 10';
+  } else {
+    eq.innerHTML = '10 − <span>' + q.a + '</span> = <span class="qbox">?</span>';
+  }
+  var box = document.getElementById('qOptions');
+  box.innerHTML = '';
+  box.dataset.ans = q.ans;
+  makeOptions(q.ans).forEach(function (v) {
+    var b = document.createElement('button');
+    b.className = 'opt num'; b.textContent = v; b.dataset.v = v;
+    b.addEventListener('click', function () { choose(v, b); });
+    box.appendChild(b);
+  });
+  var msg = document.getElementById('qMsg');
+  msg.textContent = ''; msg.className = '';
+  var dots = '';
+  for (var i = 0; i < N; i++) {
+    dots += '<span class="dot' + (i < Q.idx ? ' done' : i === Q.idx ? ' cur' : '') + '"></span>';
+  }
+  document.getElementById('qDots').innerHTML = dots;
+}
+function choose(v, btn) {
+  if (Q.lock) return;
+  var q = Q.qs[Q.idx], msg = document.getElementById('qMsg');
+  if (v === q.ans) {
+    btn.classList.add('right');
+    [].forEach.call(document.querySelectorAll('#qOptions .opt'), function (b) { b.disabled = true; });
+    msg.innerHTML = '<div class="rhymeBox">' +
+        '<div class="hint">' + q.a + ' 和 ' + q.ans + ' 凑成 10 🎉</div>' +
+        '<div class="rhyme num">' + rhymeHtml(q.a) + '</div>' +
+        '<div class="readRow"><button class="btn gray" id="readBtn">🔊 大声读</button>' +
+        '<button class="btn green" id="nextBtn">下一题 →</button></div>' +
+      '</div>';
+    msg.className = 'good';
+    Q.lock = true;
+    document.getElementById('readBtn').addEventListener('click', function () {
+      speak(rhymeText(q.a), this);
+    });
+    document.getElementById('nextBtn').addEventListener('click', function () {
+      clearTimeout(Q.autoT); next();
+    });
+    Q.autoT = setTimeout(next, 3000);   /* 读完口诀自动进下一题 */
+  } else {
+    btn.classList.add('wrong'); btn.disabled = true;
+    Q.wrong[Q.idx] = 1;
+    msg.textContent = '再想想哦';
+    msg.className = 'bad';
+  }
+}
+function speak(text, btn) {
+  if (!('speechSynthesis' in window)) { if (btn) btn.textContent = '请自己大声读'; return; }
+  try {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = 'zh-CN'; u.rate = .8;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+    if (btn) {
+      btn.textContent = '🔊 正在读…';
+      setTimeout(function () { btn.textContent = '🔊 大声读'; }, 2200);
+    }
+  } catch (e) { if (btn) btn.textContent = '请自己大声读'; }
+}
+function next() {
+  Q.lock = false; Q.idx++;
+  if (Q.idx >= N) { finish(); return; }
+  render();
+}
+function finish() {
+  var wn = Object.keys(Q.wrong).length;
+  var stars = wn === 0 ? 3 : wn <= 3 ? 2 : 1;
+  document.getElementById('finalStars').textContent =
+    '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+  document.getElementById('finalMsg').textContent = wn === 0
+    ? '10 题全对，十的好朋友全记住啦！' : '答错 ' + wn + ' 题，再想想十的好朋友～';
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('final').classList.remove('hidden');
+  if (wn === 0) confetti();
+}
+function confetti() {
+  var colors = ['#FF922B','#40C057','#339AF0','#F06595','#FFD43B','#845EF7'];
+  for (var i = 0; i < 42; i++) {
+    var c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[i % colors.length];
+    c.style.animationDelay = (Math.random() * .6) + 's';
+    c.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
+    document.body.appendChild(c);
+    setTimeout(function (el) { return function () { el.remove(); }; }(c), 3400);
+  }
+}
+/* 开场：凑十歌（带拼音，点句子朗读） */
+(function () {
+  var h = '';
+  [1, 2, 3, 4, 5].forEach(function (k) {
+    h += '<div class="songLine num" data-k="' + k + '">' + rhymeHtml(k) + '</div>';
+  });
+  document.getElementById('introSong').innerHTML = h;
+})();
+document.getElementById('introSong').addEventListener('click', function (e) {
+  var line = e.target.closest('.songLine');
+  if (!line) return;
+  speak(rhymeText(+line.dataset.k), null);
+  line.classList.add('reading');
+  setTimeout(function () { line.classList.remove('reading'); }, 2000);
+});
+document.getElementById('readSongBtn').addEventListener('click', function () {
+  speak(RHYMES[1].h.join('') + '。' + RHYMES[2].h.join('') + '。' + RHYMES[3].h.join('') + '。' +
+        RHYMES[4].h.join('') + '。' + RHYMES[5].h.join('') + '。', this);
+});
+document.getElementById('goQuizBtn').addEventListener('click', function () {
+  document.getElementById('intro').classList.add('hidden');
+  start();
+});
+document.getElementById('againBtn').addEventListener('click', start);
+</script>
+</body>
+</html>
